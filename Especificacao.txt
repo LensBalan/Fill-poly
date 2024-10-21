@@ -1,0 +1,27 @@
+Após o Software ser executado tem-se as seguintes funcionalidades:
+
+---------------------------------------------------------------------------------------------------------------------
+Botões de iteração:
+
+- Botão esquerdo do mouse: Por padrão sempre desenhará vértices(pontos). Caso o usuário vá até o menu
+'Opções' e mude para 'Selecionar polígono', o botão esquerdo será redefinido para a seleção de polígonos.
+Para voltar ao modo de desenho, só ir novamente em 'Opções' e clicar na opção 'Voltar Ao Modo de Desenho'.
+
+- Botão direito do mouse: Sempre é utilizado para fechar polígonos, ou seja, após clica-lo o último vértice
+será interligado com o primeiro vértice, fechando o polígono. (restrições de fechamento pelas regras geométricas).
+
+----------------------------------------------------------------------------------------------------------------------
+
+Funcionalidades:
+
+- Desenhar e Fechar polígonos (botão esquerdo e direito do mouse).
+
+- Modo de Seleção: Com o modo de seleção ativado, no botão esquerdo do mouse é selecionado um polígono qualquer, após isso,
+pode-se alterar a cor de preenchimento desse polígono ou excluí-lo, para essas funcionalidades basta acessar o menu 'Polígono 
+Selecionado', que só funciona quando se tem um polígono selecionado.
+
+- Demais funcionalidades são encontradas no menu 'Opções', todas simples de se entender.
+
+- Funcionalidade Extra: 'Limpar Tela', a qual limpa a tela de desenho e 'reinicia' tudo para começar do 0.
+
+----------------------------------------------------------------------------------------------------------------------
