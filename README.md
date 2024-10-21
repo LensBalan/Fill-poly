@@ -18,7 +18,7 @@ Como Executar:
 
 - Com tudo isso corretamente instalado e configurado, a aplicação rodará normalmente, basta
 clicar no botão de execução do VS Code.
-- Ou pelo terminal dar o seguinte comando: python .\fillpoly.py
+- Ou pelo terminal dar o seguinte comando: 'python .\fillpoly.py'
 (o terminal deve estar aberto na pasta do projeto para rodar por ele)
 
 ----------------------------------------------------------------------------------------------------
