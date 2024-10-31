@@ -1,4 +1,4 @@
-import tkinter as tk  # desenhador
+import tkinter as tk  #Interface grafica
 from tkinter import colorchooser
 import math  
 
@@ -25,12 +25,13 @@ class Tela_de_Desenho:
         self.Desenha_xy() # eixos x e y
 
         self.vertices = [] #Lista de vertices (x, y)
-        self.poligonos = []  #Polígonos armazenados (vertices, cor_preenchimento)
+        self.poligonos = []  #Poligonos armazenados (vertices, cor_preenchimento)
         self.indice_poli = 0  #Começa com zero
         self.matriz_poligonos = [[-1 for _ in range(self.canvas_width)] for _ in range(self.canvas_height)] #matriz 640x480 para seleçao de poligonos
         self.indice_selecionado = -1
 
-        self.edge_color = "yellow" #Cores Padrão (Arestas e preenchimento)
+        #Cores Padrao (Arestas e preenchimento)
+        self.cor_aresta = "yellow" 
         self.cor_preenchimento = "green" 
 
         #Cliques do mouse (desenhar V e fechar poligono)
@@ -82,14 +83,14 @@ class Tela_de_Desenho:
             if len(self.vertices) > 1:
                 x1, y1 = self.vertices[-2]
                 x2, y2 = self.vertices[-1]
-                self.canvas.create_line(x1 + 20, y1 + 20, x2 + 20, y2 + 20, fill=self.edge_color) #aresta
+                self.canvas.create_line(x1 + 20, y1 + 20, x2 + 20, y2 + 20, fill=self.cor_aresta) #aresta
 
     def Fecha_poligono(self, event):
         #Um poligono deve ter + de 3 vertices
         if len(self.vertices) > 2:  
             x1, y1 = self.vertices[-1] #Conecta o ultimo vertice com o primeiro
             x2, y2 = self.vertices[0]
-            self.canvas.create_line(x1 + 20, y1 + 20, x2 + 20, y2 + 20, fill=self.edge_color)
+            self.canvas.create_line(x1 + 20, y1 + 20, x2 + 20, y2 + 20, fill=self.cor_aresta)
             print(f"Polígono fechado com os vértices: {self.vertices}")
 
             self.Fill_poly_func()  #Apos fechar, preenche
@@ -101,8 +102,8 @@ class Tela_de_Desenho:
     def Trocar_cor_arestas(self):
         color = colorchooser.askcolor(title="Escolha a Cor das Arestas")  #seletor de cores
         if color[1] is not None:  #se uma cor foi escolhida, troca
-            self.edge_color = color[1]
-            print(f"Cor das arestas alterada para: {self.edge_color}")
+            self.cor_aresta = color[1]
+            print(f"Cor das arestas alterada para: {self.cor_aresta}")
 
     def Trocar_cor_preenchimento(self):
         color = colorchooser.askcolor(title="Escolha a Cor de Preenchimento")
@@ -110,6 +111,7 @@ class Tela_de_Desenho:
             self.cor_preenchimento = color[1]
             print(f"Cor de preenchimento alterada para: {self.cor_preenchimento}")
     
+    # Funcao Fill poly
     def Fill_poly_func(self):
     #Encontrar os valores min e max de y (scan lines a serem processadas)
         ymin = min(v[1] for v in self.vertices)
@@ -117,15 +119,16 @@ class Tela_de_Desenho:
        
         print(f"ymin: {ymin}, ymax: {ymax}")
 
-        #Lista de interceçoes (Inicialaze) Ns = ymax - ymin
-        scan_lines = [[] for _ in range(ymax - ymin + 1)]
+        #Lista de interceçoes (Inicialaze) Ns = ymax - ymin (+1 processar ymax tbm)
+        scan_lines = [[] for _ in range(ymax - ymin +1)]
 
-         #Processando arestas para calcular as interseçoes de forma inc
+         #Processando todas as arestas, seq 
         for i in range(len(self.vertices)):
             v1 = self.vertices[i]
             v2 = self.vertices[(i + 1) % len(self.vertices)]  #Conecta ao prox vertice
 
-            x1, y1 = v1 #x e y dos V a serem processados
+            #x e y dos V a serem processados
+            x1, y1 = v1 
             x2, y2 = v2
 
             #Ignora arestas horizontais
@@ -133,26 +136,24 @@ class Tela_de_Desenho:
                 if y1 > y2:  #(y1, x1) é sempre o menor
                     x1, y1, x2, y2 = x2, y2, x1, y1
 
-                #Coeficiente angular
                 dx = x2 - x1
                 dy = y2 - y1
-                Tx = dx / dy  #Incremento em x para cada scan line (Taxa)
+                Tx = dx / dy  # Taxa de variacao em x (incremento)
 
-                #Inicializa o x atual
+                #x atual
                 x_n = x1
                #y_n = y1 y incrementa em 1
 
                 print(f"Processando aresta de ({x1}, {y1}) para ({x2}, {y2})")
 
-                #Processa cada scan line de forma inc
+                #Processa cada scan line de forma inc (y_n += 1)
                 for y in range(y1, y2):
-                    scan_lines[y - ymin].append(x_n)
+                    scan_lines[y - ymin].append(x_n) #armazena intersecao
                     print(f"Scan line {y}: x = {x_n}")
                 
-                    x_n += Tx #Proxima Scan line, incrementacom a taxa(variação horizontal por linha)
+                    x_n += Tx #Proxima SL, inc com a taxa(var. horizontal por linha)
 
-        #Func interna para desenhar cada linha com atraso
-        #def Desenha_Scan_Line(y):
+        #Preenchimento entre interseçoes
         for y in range(len(scan_lines)):
             if scan_lines[y]:  #Se houver interçoes
                 scan_lines[y].sort()  #Ordena as interseçoes
@@ -168,12 +169,6 @@ class Tela_de_Desenho:
 
                     print(f"Desenhando linha de x_ini = {x_ini} até x_fim = {x_fim} na scan line {y + ymin}")
                     self.canvas.create_line(x_ini + 20, y + ymin + 20, x_fim + 20, y + ymin + 20, fill=self.cor_preenchimento) #+20 compensaçao
-
-        #Desenha cada scan line com um atraso
-        #for y in range(len(scan_lines)):
-            #self.canvas.after(y * 1, Desenha_Scan_Line, y)  #Atraso
-
-        #self.canvas.update()
 
     def Salvar_poligono(self):
         if self.vertices:
@@ -219,7 +214,7 @@ class Tela_de_Desenho:
     def Trocar_cor_poligono_selecionado(self):
         #salva a cor de preenchimento anterior
         self.cor_preenchimento_anterior = self.cor_preenchimento
-        #Verifica se ha um poligono selecionado
+        #Tem poligono selecionado?
         if self.indice_selecionado != -1:
             #Solicita nova cor
             color1 = colorchooser.askcolor(title="Escolha a Nova Cor do Polígono") 
